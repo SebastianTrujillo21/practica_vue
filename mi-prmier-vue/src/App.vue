@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 let nombre = "Pedro";
 const colorStyle = "color:blue";
 const arrayColor = ["red", "blue", "peru"];
@@ -49,13 +49,15 @@ const array_mas_largo = [
 //metodo - methods
 const handleClick = (text) => {
   console.log("Me diste click " + text);
-}
+};
 
-let counter = ref(0)
+let counter = ref(0);
+
+let arregloReactivo = ref([]);
 
 const increment = () => {
   counter.value++;
-}
+};
 
 const decrement = () => {
   counter.value--;
@@ -63,8 +65,35 @@ const decrement = () => {
 
 const returnToZero = () => {
   counter.value = 0
-}
+};
 
+//SIEMPER DEBE RETORNAR ALGO EL COMPUTED
+const counterClass= computed(()=>{
+  if(counter.value==0){
+    return 'zero'
+  }
+  if(counter.value>0){
+    return 'positive'
+  }
+  if(counter.value<0){
+    return 'negative'
+  }
+
+});
+
+const agregarArreglo = (numero) => {
+  arregloReactivo.value.push(numero)
+};
+
+const deshablitar_Button = computed(()=>{
+  if(arregloReactivo.value.includes(counter.value)){
+    return true
+  }
+  else {
+    return false 
+  }
+
+});
 </script>
 
 <template>
@@ -112,10 +141,15 @@ const returnToZero = () => {
   <template v-if="counter < 0">
     <h2 style="color:red">{{ counter }}</h2>
   </template>-->
-  <h2 v-bind:class="counter>0? 'positive':'negative'">{{ counter }}</h2>
+  <h2 v-bind:class="counterClass">{{ counter }}</h2>
   <button @click="increment">Aumentar</button>
   <button @click="decrement">Decrecer</button>
   <button @click="returnToZero">Volver a 0</button>
+  <button :disabled="deshablitar_Button" @click="agregarArreglo(counter) ">Agregar a Arreglo</button>
+  <br>
+  <ul v-for=" (numero,index) in arregloReactivo" :key="index">
+    <li>{{ numero }}</li>
+  </ul>
 
 </template>
 
@@ -130,5 +164,9 @@ h1 {
 
 .negative {
   color: red;
+}
+
+.zero{
+  color: peru;
 }
 </style>
